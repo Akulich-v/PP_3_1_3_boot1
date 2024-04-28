@@ -3,11 +3,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User</title>
+    <title>Users</title>
 </head>
 
 <body>
-<h1>User</h1>
+<h1>Users</h1>
 <div>
     <table border="1">
         <tr>
@@ -17,22 +17,37 @@
             <th>First Name</th>
             <th>Last Name</th>
             <th>E-mail</th>
+            <th>Edit User</th>
+            <th>Delete User</th>
         </tr>
         <tr>
-        <tr>
+        <tr th:each="user :${users}">
             <td th:utext="${user.getId()}"></td>
             <td th:utext="${user.getUsername()}"></td>
             <td th:utext="${user.getPassword()}"></td>
             <td th:utext="${user.getFirstName()}"></td>
             <td th:utext="${user.getLastName()}"></td>
             <td th:utext="${user.getEmail()}"></td>
-
+            <td>
+                <a th:href="@{/edit(id=${user.id})}">Edit</a>
+            </td>
+            <td>
+                <form th:action="@{/users/delete}" method="post">
+                    <input type="hidden" name="id" th:value="${user.getId()}"/>
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
         </tr>
     </table>
     <br/>
-    <a href="/logout">Выйти из пользователя</a>
+<a href="/logout">Выйти из пользователя</a>
     <br/>
 
+    <th:block th:each="msg : ${messages}">
+        <h1 th:text="${msg}"></h1>
+    </th:block>
+    <br/>
+    <a href="/new">New user</a>
 </div>
 
 </body>
