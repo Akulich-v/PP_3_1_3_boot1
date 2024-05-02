@@ -15,12 +15,12 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 import java.security.Principal;
 
 @Controller
-public class UsersController {
+public class AdminController {
     private final UserService userService;
     private final UserDetailsService userDetailsService;
 
     @Autowired
-    public UsersController(UserService userService, UserDetailsService userDetailsService) {
+    public AdminController(UserService userService, UserDetailsService userDetailsService) {
         this.userService = userService;
         this.userDetailsService = userDetailsService;
     }
