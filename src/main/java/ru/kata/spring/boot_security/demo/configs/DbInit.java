@@ -50,6 +50,7 @@ public class DbInit {
                 , "E-mailTempUser@email.ru");
         tempUser.setRoles(Collections.singleton(userRole));
 
+
         usersRepository.save(tempAdmin);
         usersRepository.save(tempUser);
     }
