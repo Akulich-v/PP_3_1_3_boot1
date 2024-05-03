@@ -1,31 +1,28 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.security.UserDetailsService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
 
-@Controller
-@RequestMapping("/user")
-public class UsersController {
+@org.springframework.stereotype.Controller
+public class Controller {
     private final UserService userService;
     private final UserDetailsService userDetailsService;
 
     @Autowired
-    public UsersController(UserService userService, UserDetailsService userDetailsService) {
+    public Controller(UserService userService, UserDetailsService userDetailsService) {
         this.userService = userService;
         this.userDetailsService = userDetailsService;
     }
 
-    @GetMapping()
-    public String findOne(ModelMap model, Principal principal) {
-        User user = userDetailsService.findByUsername(principal.getName());
-        model.addAttribute("user", user);
-        return "user";
+    @GetMapping(value = "/index")
+    public String getStartPageIndex() {
+        return "index";
     }
 }

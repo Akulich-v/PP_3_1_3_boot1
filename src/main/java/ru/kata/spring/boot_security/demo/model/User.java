@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 public class User implements UserDetails {
 
     @Id
-    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -33,25 +32,15 @@ public class User implements UserDetails {
     @Column(name = "Email")
     private String email;
 
+    @ManyToMany
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_ID"),
+            inverseJoinColumns = @JoinColumn(name = "role_ID"))
+    private Collection<Role> roles;
+
 
     public User() {
     }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toList());
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
 
     public User(String username, String password, String firstName, String lastName, String email) {
         this.username = username;
@@ -62,6 +51,22 @@ public class User implements UserDetails {
     }
 
 
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
 
     public Long getId() {
         return id;
@@ -71,6 +76,7 @@ public class User implements UserDetails {
         this.id = id;
     }
 
+
     public String getFirstName() {
         return firstName;
     }
@@ -78,6 +84,7 @@ public class User implements UserDetails {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
+
 
     public String getLastName() {
         return lastName;
@@ -87,6 +94,7 @@ public class User implements UserDetails {
         this.lastName = lastName;
     }
 
+
     public String getEmail() {
         return email;
     }
@@ -94,10 +102,22 @@ public class User implements UserDetails {
     public void setEmail(String email) {
         this.email = email;
     }
-    public String getUsername() {
-        return username;
+
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
     }
 
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
+    }
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -118,23 +138,6 @@ public class User implements UserDetails {
         return true;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @ManyToMany
-    @JoinTable(name = "users_roles",
-                joinColumns = @JoinColumn(name = "user_ID"),
-                inverseJoinColumns = @JoinColumn(name = "role_ID"))
-    private Collection <Role> roles;
-
-    public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
-    }
-
-    public Collection<Role> getRoles() {
-        return roles;
-    }
 
     @Override
     public boolean equals(Object o) {
