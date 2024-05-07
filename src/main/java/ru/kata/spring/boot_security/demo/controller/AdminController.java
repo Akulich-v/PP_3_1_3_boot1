@@ -6,56 +6,51 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.security.UserDetailsService;
 import ru.kata.spring.boot_security.demo.service.UserService;
-
-import java.security.Principal;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
     private final UserService userService;
-    private final UserDetailsService userDetailsService;
 
     @Autowired
-    public AdminController(UserService userService, UserDetailsService userDetailsService) {
+    public AdminController(UserService userService) {
         this.userService = userService;
-        this.userDetailsService = userDetailsService;
     }
 
-    @GetMapping(value = "/posts")
+    @GetMapping(value = "/getAll")
     public String findAll(ModelMap model) {
         model.addAttribute("users", userService.findAll());
         return "users";
     }
 
-    @GetMapping("/new")
+    @GetMapping("/viewCreateForm")
     public String viewCreateForm(Model model) {
         model.addAttribute("user", new User());
         return "new";
     }
 
-    @PostMapping("/new")
+    @PostMapping("/saveUser")
     public String save(@ModelAttribute("user") User user) {
         userService.save(user);
-        return "redirect:/admin/posts";
+        return "redirect:/admin/getAll";
     }
 
-    @GetMapping("/edit")
+    @GetMapping("/getUserEdit")
     public String getUser(Model model, @RequestParam long id) {
         model.addAttribute("user", userService.findOne(id));
         return "edit";
     }
 
-    @PostMapping("/posts")
+    @PostMapping("/updateUser")
     public String update(@ModelAttribute("user") User user, @RequestParam long id) {
         userService.update(id, user);
-        return "redirect:/admin/posts";
+        return "redirect:/admin/getAll";
     }
 
-    @PostMapping("/users/delete")
+    @PostMapping("/deleteUser")
     public String delete(@RequestParam long id) {
         userService.delete(id);
-        return "redirect:/admin/posts";
+        return "redirect:/admin/getAll";
     }
 }

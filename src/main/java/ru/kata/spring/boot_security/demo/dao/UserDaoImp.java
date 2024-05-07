@@ -5,12 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.configs.WebSecurityConfig;
 import ru.kata.spring.boot_security.demo.model.User;
-
-
 import javax.persistence.*;
-
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Repository
@@ -18,9 +14,16 @@ public class UserDaoImp implements UserDao {
 
     @PersistenceContext
     private EntityManager entityManager;
+    private WebSecurityConfig webSecurityConfig;
+    /**
+     * webSecurityConfig нужен для получения метода getPasswordEncoder
+     */
 
     @Autowired
-    private WebSecurityConfig webSecurityConfig;
+    public UserDaoImp(EntityManager entityManager, WebSecurityConfig webSecurityConfig) {
+        this.entityManager = entityManager;
+        this.webSecurityConfig = webSecurityConfig;
+    }
 
     @Transactional(readOnly = true)
     @Override
@@ -54,7 +57,7 @@ public class UserDaoImp implements UserDao {
     @Transactional
     @Override
     public void update(long id, User updatedUser) {
-        User userToBeUpdated = findOne(id);
+        User userToBeUpdated = entityManager.find(User.class, id);
         userToBeUpdated.setUsername(updatedUser.getUsername());
         userToBeUpdated.setPassword(webSecurityConfig.getPasswordEncoder().encode(updatedUser.getPassword()));
         userToBeUpdated.setFirstName(updatedUser.getFirstName());

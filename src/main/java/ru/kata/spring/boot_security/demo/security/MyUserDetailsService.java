@@ -1,20 +1,25 @@
 package ru.kata.spring.boot_security.demo.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositories.UsersRepository;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import javax.transaction.Transactional;
 
 @Service
-public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
+public class MyUserDetailsService implements UserDetailsService {
+    /**
+     * Оставил "My", чтоб были разные названия и не делать длинный импорт при имплементации
+     */
 
     private final UsersRepository usersRepository;
 
-
-    public UserDetailsService(UsersRepository usersRepository) {
+    @Autowired
+    public MyUserDetailsService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
 
@@ -26,9 +31,11 @@ public class UserDetailsService implements org.springframework.security.core.use
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = findByUsername(username);
+
         if (user == null) {
             throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), user.getAuthorities());
+        user.getRoles().size();
+        return new UserPrincipal(user);
+        }
     }
-}

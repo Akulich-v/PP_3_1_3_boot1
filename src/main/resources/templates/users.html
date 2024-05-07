@@ -29,10 +29,10 @@
             <td th:utext="${user.getLastName()}"></td>
             <td th:utext="${user.getEmail()}"></td>
             <td>
-                <a th:href="@{/admin/edit(id=${user.id})}">Edit</a>
+                <a th:href="@{/admin/getUserEdit(id=${user.id})}">Edit</a>
             </td>
             <td>
-                <form th:action="@{/admin/users/delete}" method="post">
+                <form th:action="@{/admin/deleteUser}" method="post">
                     <input type="hidden" name="id" th:value="${user.getId()}"/>
                     <button type="submit">Delete</button>
                 </form>
@@ -47,7 +47,7 @@
         <h1 th:text="${msg}"></h1>
     </th:block>
     <br/>
-    <a href="/admin/new">New user</a>
+    <a href="/admin/viewCreateForm">New user</a>
 </div>
 
 </body>
