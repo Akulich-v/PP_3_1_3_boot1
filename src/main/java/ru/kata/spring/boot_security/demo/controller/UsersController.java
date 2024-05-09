@@ -5,7 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.security.MyUserDetailsService;
+import ru.kata.spring.boot_security.demo.security.CustomUserDetailsService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 import java.security.Principal;
 
@@ -13,10 +13,10 @@ import java.security.Principal;
 @RequestMapping("/user")
 public class UsersController {
     private final UserService userService;
-    private final MyUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
     @Autowired
-    public UsersController(UserService userService, MyUserDetailsService userDetailsService) {
+    public UsersController(UserService userService, CustomUserDetailsService userDetailsService) {
         this.userService = userService;
         this.userDetailsService = userDetailsService;
     }

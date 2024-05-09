@@ -14,15 +14,10 @@ public class UserDaoImp implements UserDao {
 
     @PersistenceContext
     private EntityManager entityManager;
-    private WebSecurityConfig webSecurityConfig;
-    /**
-     * webSecurityConfig нужен для получения метода getPasswordEncoder
-     */
 
     @Autowired
-    public UserDaoImp(EntityManager entityManager, WebSecurityConfig webSecurityConfig) {
+    public UserDaoImp(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.webSecurityConfig = webSecurityConfig;
     }
 
     @Transactional(readOnly = true)
@@ -41,7 +36,7 @@ public class UserDaoImp implements UserDao {
     @Transactional
     @Override
     public void save(User user) {
-        user.setPassword(webSecurityConfig.getPasswordEncoder().encode(user.getPassword()));
+        //user.setPassword(webSecurityConfig.getPasswordEncoder().encode(user.getPassword()));
         entityManager.persist(user);
     }
 
@@ -59,7 +54,7 @@ public class UserDaoImp implements UserDao {
     public void update(long id, User updatedUser) {
         User userToBeUpdated = entityManager.find(User.class, id);
         userToBeUpdated.setUsername(updatedUser.getUsername());
-        userToBeUpdated.setPassword(webSecurityConfig.getPasswordEncoder().encode(updatedUser.getPassword()));
+        userToBeUpdated.setPassword(updatedUser.getPassword());
         userToBeUpdated.setFirstName(updatedUser.getFirstName());
         userToBeUpdated.setLastName(updatedUser.getLastName());
         userToBeUpdated.setEmail(updatedUser.getEmail());

@@ -8,18 +8,15 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositories.UsersRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class MyUserDetailsService implements UserDetailsService {
-    /**
-     * Оставил "My", чтоб были разные названия и не делать длинный импорт при имплементации
-     */
+public class CustomUserDetailsService implements UserDetailsService {
 
     private final UsersRepository usersRepository;
 
     @Autowired
-    public MyUserDetailsService(UsersRepository usersRepository) {
+    public CustomUserDetailsService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
 
@@ -28,7 +25,7 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = findByUsername(username);
 
