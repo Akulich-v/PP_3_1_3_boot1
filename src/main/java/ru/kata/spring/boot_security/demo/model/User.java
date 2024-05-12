@@ -2,7 +2,9 @@ package ru.kata.spring.boot_security.demo.model;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -27,21 +29,25 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @ManyToMany
-    @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Collection<Role> roles;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Role>roles;
 
     public User() {
     }
 
-    public User(String username, String password, String firstName, String lastName, String email) {
+    public User(String username
+            , String password
+            , String firstName
+            , String lastName
+            , String email
+            , Set<Role> roles) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.roles = roles;
     }
 
     public String getUsername() {
@@ -81,10 +87,10 @@ public class User {
         this.email = email;
     }
 
-    public Collection<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
-    public void setRoles(Collection<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
@@ -92,18 +98,12 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
-        return Objects.equals(id, user.id) &&
-                Objects.equals(username, user.username) &&
-                Objects.equals(password, user.password) &&
-                Objects.equals(firstName, user.firstName) &&
-                Objects.equals(lastName, user.lastName) &&
-                Objects.equals(email, user.email);
+        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email) && Objects.equals(roles, user.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username,
-                password, firstName, lastName, email);
+        return Objects.hash(id, username, password, firstName, lastName, email, roles);
     }
 
     @Override
@@ -115,6 +115,7 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
+                ", roles=" + roles +
                 '}';
     }
 }

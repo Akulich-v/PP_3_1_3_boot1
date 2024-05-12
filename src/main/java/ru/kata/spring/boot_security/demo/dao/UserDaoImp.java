@@ -36,7 +36,6 @@ public class UserDaoImp implements UserDao {
     @Transactional
     @Override
     public void save(User user) {
-        //user.setPassword(webSecurityConfig.getPasswordEncoder().encode(user.getPassword()));
         entityManager.persist(user);
     }
 
@@ -51,13 +50,15 @@ public class UserDaoImp implements UserDao {
 
     @Transactional
     @Override
-    public void update(long id, User updatedUser) {
-        User userToBeUpdated = entityManager.find(User.class, id);
-        userToBeUpdated.setUsername(updatedUser.getUsername());
-        userToBeUpdated.setPassword(updatedUser.getPassword());
-        userToBeUpdated.setFirstName(updatedUser.getFirstName());
-        userToBeUpdated.setLastName(updatedUser.getLastName());
-        userToBeUpdated.setEmail(updatedUser.getEmail());
-        entityManager.merge(userToBeUpdated);
+    public void update(User updatedUser) {
+
+        updatedUser.setId(updatedUser.getId());
+        updatedUser.setUsername(updatedUser.getUsername());
+        updatedUser.setPassword(updatedUser.getPassword());
+        updatedUser.setFirstName(updatedUser.getFirstName());
+        updatedUser.setLastName(updatedUser.getLastName());
+        updatedUser.setEmail(updatedUser.getEmail());
+        updatedUser.setRoles(updatedUser.getRoles());
+        entityManager.merge(updatedUser);
     }
 }

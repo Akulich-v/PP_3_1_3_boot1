@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -15,8 +17,6 @@ public class Role {
 
     public Role() {
     }
-
-
 
     public Role(Long id, String name) {
         this.id = id;
