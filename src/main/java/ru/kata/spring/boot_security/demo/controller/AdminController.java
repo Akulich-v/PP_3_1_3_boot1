@@ -40,12 +40,6 @@ public class AdminController {
         return "admin";
     }
 
-//    @PostMapping("")
-//    public String save(@ModelAttribute("user") User user) {
-//        userService.save(user);
-//        return "redirect:/admin";
-//    }
-
     @PostMapping("")
     public String save(@ModelAttribute("user") User user, @RequestParam String roleName) {
         Role role = roleRepository.findByName(roleName);
@@ -58,12 +52,12 @@ public class AdminController {
         }
         user.setRoles(roles);
         userService.save(user);
-        return "redirect:/admin";
+        return "redirect:/admin#pills-admin";
     }
 
     @PostMapping("/delete")
     public String delete(@RequestParam long id) {
         userService.delete(id);
-        return "redirect:/admin";
+        return "redirect:/admin#pills-admin";
     }
 }

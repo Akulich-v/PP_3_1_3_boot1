@@ -28,9 +28,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
+                .antMatchers("/api/v1/user/**").permitAll() // Разрешите доступ к вашим API путям
                 .antMatchers("/api/v1/user/**").hasRole("ADMIN")
+                .antMatchers("/api/v1/user/**").hasRole("USER")
                 .antMatchers("/user/").hasRole("USER")
                 .antMatchers("/**").hasRole("ADMIN")
+                .antMatchers("/**").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().successHandler(successUserHandler)

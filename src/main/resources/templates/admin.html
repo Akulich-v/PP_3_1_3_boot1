@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -28,30 +28,48 @@
         </div>
     </div>
 </div>
+<br>
 
 <div class="container-fluid vh-100">
     <div class="row h-100">
         <!-- левая часть с админ и юзер -->
         <div class="col-2" style="flex-grow: 1; padding-right: 0; padding-left: 0;margin: 0">
             <ul class="nav flex-column nav-pills" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active btn-lg btn-block"
-                       data-toggle="tab"
-                       href="#admin"
+                <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+
+                    <a class="nav-link btn-lg"
+                       id="pills-admin-tab"
+                       data-toggle="pill"
+                       href="#pills-admin"
+                       role="tab"
+                       aria-controls="pills-admin"
+                       aria-selected="false"
                     >Admin</a>
+
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link btn-lg btn-block"
-                       data-toggle="tab"
-                       href="#user"
+                    <a class="nav-link btn-lg"
+                       id="pills-user-tab"
+                       data-toggle="pill"
+                       href="#pills-user"
+                       role="tab"
+                       aria-controls="pills-user"
+                       aria-selected="false"
                     >User</a>
                 </li>
             </ul>
         </div>
         <!-- основная часть -->
-        <div class="col-10 bg-light" style="flex-grow: 1;">
-            <div class="tab-content">
-                <div role="tabpanel" class="tab-pane active" id="admin">
+        <div class="col-10 bg-light" style="flex-grow: 1; padding-left: 30px;">
+            <div class="tab-content"
+                 id="pills-tabContent"
+            >
+                <!-- основная часть ADMIN-->
+                <div role="tabpanel"
+                     class="tab-pane fade"
+                     id="pills-admin"
+                     aria-labelledby="pills-admin-tab"
+                >
                     <h1>Admin panel</h1>
                     <br>
                     <ul class="nav nav-tabs">
@@ -66,12 +84,18 @@
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="adminPanel">
                             <div class="bg-white">
+                                <table class="table table-striped align-items-center" style="margin-bottom: 0;">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th colspan="9" class="text-body"><h4>All users</h4></th>
+                                    </tr>
+                                    </thead>
+                                </table>
                                 <div class="bg-white p-3">
+
+
                                     <table class="table table-striped align-items-center">
                                         <thead class="thead-light">
-                                        <tr>
-                                            <th colspan="9" class="text-body"><h4>All users</h4></th>
-                                        </tr>
                                         </thead>
                                         <thead>
                                         <tr>
@@ -97,24 +121,35 @@
                                             <td style="vertical-align: middle;"
                                                 th:text="${#strings.listJoin(user.roles.![name.replace('ROLE_', '')], ', ')}"></td>
                                             <td style="vertical-align: middle;">
-                                                <button class="btn btn-info" th:data-userId="${user.id}"
+                                                <button class="btn btn-info"
+                                                        data-user='Edit User'
+                                                        th:data-userId="${user.id}"
                                                         data-toggle="modal"
-                                                        data-target="#myEdit">Edit
+                                                        data-target="#myEdit"
+                                                        data-action="edit"
+                                                >Edit
                                                 </button>
                                             </td>
+
                                             <td style="vertical-align: middle;">
-                                                <form th:action="@{/admin/delete}" method="post">
-                                                    <input type="hidden" name="id" th:value="${user.getId()}"/>
-                                                    <button type="submit" class="btn btn-danger" role="button"
-                                                            aria-pressed="true">Delete
-                                                    </button>
-                                                </form>
+                                                <button class="btn btn-danger"
+                                                        data-user='Delete User'
+                                                        th:data-userId="${user.id}"
+                                                        data-toggle="modal"
+                                                        data-target="#myEdit"
+                                                        data-action="delete"
+                                                >Delete
+                                                </button>
+
+
+
                                             </td>
+                                            <th:block th:text="${action}"></th:block>
                                         </tr>
                                         </tbody>
                                     </table>
 
-
+                                    <!--МОДАЛЬНОЕ ОКНО-->
                                     <div id="myEdit"
                                          class="modal fade"
                                          tabindex="-1"
@@ -158,21 +193,32 @@
                                                             <input type="text" class="form-control" id="user-email">
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="user-roles" class="col-form-label">Role</label>
-                                                            <input type="text" class="form-control" id="user-roles">
+                                                            <label class="col-form-label">Role:</label>
+                                                            <div class="input-group-prepend">
+                                                                <label></label>
+                                                            </div>
+                                                                <select class="custom-select" id="user-role">
+                                                                <option value="ROLE_USER">User</option>
+                                                                <option value="ROLE_ADMIN">Admin</option>
+                                                            </select>
                                                         </div>
 
 
                                                     </form>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button class="btn btn-secondary" data-dismiss="modal">Close
-                                                    </button>
-                                                    <button id="edit-user" class="btn btn-info">Edit</button>
+                                                    <button class="btn btn-secondary"
+                                                            data-dismiss="modal"
+                                                    >Close</button>
+                                                    <button id="edit-user"
+                                                            class="btn btn-primary"
+                                                    >Edit</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
+
 
 
                                 </div>
@@ -247,16 +293,24 @@
                     </div>
                 </div>
                 <!-- основная часть USER-->
-                <div role="tabpanel" class="tab-pane" id="user">
+                <div role="tabpanel"
+                     class="tab-pane fade"
+                     id="pills-user"
+                     aria-labelledby="pills-user-tab"
+                >
                     <h1>User information-page</h1>
                     <br>
                     <div class="bg-white">
+                        <table class="table table-striped align-items-center" style="margin-bottom: 0;">
+                            <thead class="thead-light">
+                            <tr>
+                                <th colspan="9" class="text-body"><h4>About user</h4></th>
+                            </tr>
+                            </thead>
+                        </table>
                         <div class="bg-white p-3">
                             <table class="table">
                                 <thead class="thead-light">
-                                <tr>
-                                    <th colspan="9" class="text-body"><h4>About user</h4></th>
-                                </tr>
                                 </thead>
                                 <thead>
                                 <tr>
@@ -300,76 +354,103 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+
 <script>
     $('#myEdit').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
         var userId = button.data('userid');
+        var userAction = button.data('user');
+        var action = button.data('action');
+        var modal = $(this);
+        var modalFooter = modal.find('.modal-footer');
+
+        modal.find('.modal-title').text(userAction);
 
         if (userId) {
             $.ajax({
                 url: '/api/v1/user/' + userId,
                 method: 'GET',
                 success: function (data) {
-                    var modal = $('#myEdit');
                     modal.find('#user-id').val(data.id);
                     modal.find('#user-name').val(data.username);
                     modal.find('#user-password').val(data.password);
                     modal.find('#user-first_name').val(data.firstName);
                     modal.find('#user-last_name').val(data.lastName);
                     modal.find('#user-email').val(data.email);
-                    var roles = data.roles.map(function (role) {
-                        return role.name;
-                    }).join(', ');
-                    modal.find('#user-roles').val(roles);
+                    modal.find('#user-role').val(data.roles[0].name);
                 },
                 error: function (err) {
                     alert('Error: ' + err.responseText);
                 }
             });
         }
+
+        if (action === 'delete') {
+            modal.find('input, .custom-select').prop('disabled', true);
+            modalFooter.find('#edit-user').hide();
+            modalFooter.find('#delete-user').show();
+        } else {
+            modal.find('input, .custom-select').prop('disabled', false);
+            modalFooter.find('#edit-user').show();
+            modalFooter.find('#delete-user').hide();
+        }
     });
 
-
-    $('#edit-user').click(function () {
-        let modal = $('#myEdit')
-        let rolesString = modal.find('#user-roles').val();
-        let rolesArray = rolesString.split(',');
-        let rolesSet = new Set(rolesArray);
-        let user = {
-
+    $('#edit-user').click(function() {
+        var modal = $('#myEdit');
+        var user = {
             id: modal.find('#user-id').val(),
             username: modal.find('#user-name').val(),
             password: modal.find('#user-password').val(),
             firstName: modal.find('#user-first_name').val(),
             lastName: modal.find('#user-last_name').val(),
             email: modal.find('#user-email').val(),
-            //roles: rolesSet
-
+            roles: [{ name: modal.find('#user-role').val() }]
         };
 
         $.ajax({
-            url: '/api/v1/user',
-            type: 'POST',
+            url: '/api/v1/user/' + user.id,
+            type: 'PUT', // Используйте метод PUT для обновления пользователя
             data: JSON.stringify(user),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success: () => {
-                location.reload()
+            success: function() {
+                location.reload();
             },
-            error: (err) => {
-                alert(err);
+            error: function(err) {
+                alert('Error: ' + err.responseText);
             }
-        })
+        });
 
         modal.modal('hide');
     });
 
+    $('#delete-user').click(function() {
+        var userId = $('#user-id').val();
+
+        $.ajax({
+            url: '/api/v1/user/' + userId,
+            type: 'DELETE', // Используйте метод DELETE для удаления пользователя
+            success: function() {
+                location.reload();
+            },
+            error: function(err) {
+                alert('Error: ' + err.responseText);
+            }
+        });
+
+        $('#myEdit').modal('hide');
+    });
 </script>
-<!--<script>-->
-<!--    function setRole(role) {-->
-<!--        document.getElementById('dropdownMenuButton1').textContent = role; // Отображаем выбранную роль на кнопке-->
-<!--        document.getElementById('selectedRole').value = role; // Устанавливаем значение скрытого поля-->
-<!--    }-->
-<!--</script>-->
+<script>
+    $(document).ready(function() {
+        var hash = window.location.hash;
+        if (hash) {
+            $('.nav-pills a[href="' + hash + '"]').tab('show');
+            window.scrollTo(0, 0);
+        }
+    });
+</script>
+
 </body>
 </html>
