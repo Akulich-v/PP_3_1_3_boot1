@@ -385,9 +385,6 @@
 
     $('#edit-user').click(function () {
         let modal = $('#myEdit')
-        let rolesString = modal.find('#user-roles').val();
-        let rolesArray = rolesString.split(',');
-        let rolesSet = new Set(rolesArray);
         let user = {
 
             id: modal.find('#user-id').val(),
@@ -396,7 +393,6 @@
             firstName: modal.find('#user-first_name').val(),
             lastName: modal.find('#user-last_name').val(),
             email: modal.find('#user-email').val(),
-            //roles: rolesSet
 
         };
 
@@ -430,11 +426,9 @@
         modal.find('.modal-title').text(userAction);
 
         if (action === 'delete') {
-            // Блокируем поля ввода, если действие - удаление
             $(this).find('input, .input-group-prepend, .custom-select').prop('disabled', true);
             modalFooter.find('#edit-user').text('Delete').addClass('btn-danger').removeClass('btn-info');
         } else {
-            // Разблокируем поля ввода, если действие - редактирование
             $(this).find('input, .input-group-prepend, .custom-select').prop('disabled', false);
             modalFooter.find('#edit-user').text('Edit').addClass('btn-info').removeClass('btn-danger');
         }
@@ -450,88 +444,5 @@
         }
     });
 </script>
-<!--<script>-->
-<!--$(document).ready(function () {-->
-<!--$('#myEdit').on('show.bs.modal', function (event) {-->
-<!--var button = $(event.relatedTarget);-->
-<!--var userId = button.data('userid');-->
-<!--var action = button.data('action');-->
-<!--var modal = $(this);-->
-
-<!--modal.find('.modal-title').text(action === 'edit' ? 'Edit User' : 'Delete User');-->
-<!--modal.find('.modal-footer #edit-user').text(action === 'edit' ? 'Edit' : 'Delete').toggleClass('btn-danger', action === 'delete').toggleClass('btn-info', action === 'edit');-->
-
-<!--if (userId) {-->
-<!--$.ajax({-->
-<!--url: '/api/v1/user/' + userId,-->
-<!--method: 'GET',-->
-<!--success: function (data) {-->
-<!--modal.find('#user-id').val(data.id);-->
-<!--modal.find('#user-name').val(data.username).prop('disabled', action === 'delete');-->
-<!--modal.find('#user-password').val(data.password).prop('disabled', action === 'delete');-->
-<!--modal.find('#user-first_name').val(data.firstName).prop('disabled', action === 'delete');-->
-<!--modal.find('#user-last_name').val(data.lastName).prop('disabled', action === 'delete');-->
-<!--modal.find('#user-email').val(data.email).prop('disabled', action === 'delete');-->
-<!--modal.find('#user-role').val(data.roles.map(role => role.name).join(',')).prop('disabled', action === 'delete');-->
-<!--},-->
-<!--error: function (err) {-->
-<!--alert('Error: ' + err.responseText);-->
-<!--}-->
-<!--});-->
-<!--}-->
-<!--});-->
-
-<!--$('#edit-user').click(function () {-->
-<!--var modal = $('#myEdit');-->
-<!--var action = modal.find('.modal-footer #edit-user').text().toLowerCase();-->
-<!--var userId = modal.find('#user-id').val();-->
-
-<!--if (action === 'delete') {-->
-<!--$.ajax({-->
-<!--url: '/api/v1/user/' + userId,-->
-<!--type: 'DELETE',-->
-<!--success: function () {-->
-<!--location.reload();-->
-<!--},-->
-<!--error: function (err) {-->
-<!--alert('Error: ' + err.responseText);-->
-<!--}-->
-<!--});-->
-<!--} else {-->
-<!--var user = {-->
-<!--id: userId,-->
-<!--username: modal.find('#user-name').val(),-->
-<!--password: modal.find('#user-password').val(),-->
-<!--firstName: modal.find('#user-first_name').val(),-->
-<!--lastName: modal.find('#user-last_name').val(),-->
-<!--email: modal.find('#user-email').val(),-->
-<!--roles: modal.find('#user-role').val().split(',')-->
-<!--};-->
-
-<!--$.ajax({-->
-<!--url: '/api/v1/user',-->
-<!--type: 'POST',-->
-<!--data: JSON.stringify(user),-->
-<!--contentType: "application/json; charset=utf-8",-->
-<!--dataType: "json",-->
-<!--success: function () {-->
-<!--location.reload();-->
-<!--},-->
-<!--error: function (err) {-->
-<!--alert('Error: ' + err.responseText);-->
-<!--}-->
-<!--});-->
-<!--}-->
-
-<!--modal.modal('hide');-->
-<!--});-->
-
-<!--var hash = window.location.hash;-->
-<!--if (hash) {-->
-<!--$('.nav-pills a[href="' + hash + '"]').tab('show');-->
-<!--window.scrollTo(0, 0);-->
-<!--}-->
-<!--});-->
-<!--</script>-->
 </body>
 </html>
