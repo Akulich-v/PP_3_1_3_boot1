@@ -32,7 +32,7 @@
 
 <div class="container-fluid vh-100">
     <div class="row h-100">
-        <!-- левая часть с админ и юзер -->
+        <!-- левая часть -->
         <div class="col-2" style="flex-grow: 1; padding-right: 0; padding-left: 0;margin: 0">
             <ul class="nav flex-column nav-pills" role="tablist">
                 <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
@@ -222,7 +222,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!--                        НОВЫЙ ЮЗЕР-->
+                        <!--НОВЫЙ ЮЗЕР-->
                         <div role="tabpanel" class="tab-pane" id="newUser">
                             <table class="table table-striped align-items-center" style="margin-bottom: 0;">
                                 <thead class="thead-light">
@@ -267,7 +267,8 @@
                                                 <label for="inputGroupSelect01"
                                                        class="font-weight-bold"
                                                        style="display: block;
-                                                       text-align: center;">
+                                                       text-align: center;
+                                                       margin-bottom: 0px;">
                                                     Role: </label>
                                                 <div class="input-group-prepend">
                                                     <label></label>
@@ -354,47 +355,74 @@
         crossorigin="anonymous"></script>
 
 <script>
+
     $('#myEdit').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
         var userId = button.data('userid');
+        var action = button.data('action');
+        var modal = $(this);
+        var modalFooter = modal.find('.modal-footer');
 
         if (userId) {
             $.ajax({
                 url: '/api/v1/user/' + userId,
                 method: 'GET',
                 success: function (data) {
-                    var modal = $('#myEdit');
                     modal.find('#user-id').val(data.id);
                     modal.find('#user-name').val(data.username);
                     modal.find('#user-password').val(data.password);
                     modal.find('#user-first_name').val(data.firstName);
                     modal.find('#user-last_name').val(data.lastName);
                     modal.find('#user-email').val(data.email);
-                    var roles = data.roles.map(function (role) {
-                        return role.name;
-                    }).join(', ');
-                    modal.find('#user-roles').val(roles);
                 },
                 error: function (err) {
-                    alert('Error: ' + err.responseText);
+                    alert('Ошибка: ' + err.responseText);
                 }
             });
         }
+
+        $.ajax({
+            url: '/api/v1/user/roles',
+            method: 'GET',
+            success: function (roles) {
+                var rolesSelect = modal.find('#user-role');
+                rolesSelect.empty();
+                roles.forEach(function (role) {
+                    var roleName = role.name.replace('ROLE_', '');
+                    rolesSelect.append(new Option(roleName, role.name));
+                });
+            },
+            error: function (err) {
+                alert('Ошибка: ' + err.responseText);
+            }
+        });
+
+        modal.find('.modal-title').text(button.data('user'));
+
+        if (action === 'delete') {
+            modal.find('input, .custom-select').prop('disabled', true);
+            modalFooter.find('#edit-user').text('Удалить').addClass('btn-danger').removeClass('btn-info');
+        } else {
+            modal.find('input, .custom-select').prop('disabled', false);
+            modalFooter.find('#edit-user').text('Изменить').addClass('btn-info').removeClass('btn-danger');
+        }
     });
 
-
     $('#edit-user').click(function () {
-        let modal = $('#myEdit')
+        let modal = $('#myEdit');
+        let roleValues = modal.find('#user-role').val();
+        let roles = (Array.isArray(roleValues) ? roleValues : [roleValues]).map(role => ({ name: role }));
         let user = {
-
             id: modal.find('#user-id').val(),
             username: modal.find('#user-name').val(),
             password: modal.find('#user-password').val(),
             firstName: modal.find('#user-first_name').val(),
             lastName: modal.find('#user-last_name').val(),
             email: modal.find('#user-email').val(),
-
+            roles: roles
         };
+
+        console.log(JSON.stringify(user));
 
         $.ajax({
             url: '/api/v1/user',
@@ -403,18 +431,25 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: () => {
-                location.reload()
+                location.reload();
             },
             error: (err) => {
-                alert(err);
+                alert(err.responseText);
             }
-        })
+        });
 
         modal.modal('hide');
     });
 
-</script>
+    $(document).ready(function() {
+        var hash = window.location.hash;
+        if (hash) {
+            $('.nav-pills a[href="' + hash + '"]').tab('show');
+            window.scrollTo(0, 0);
+        }
+    });
 
+</script>
 <script>
     $('#myEdit').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
@@ -426,8 +461,22 @@
         modal.find('.modal-title').text(userAction);
 
         if (action === 'delete') {
-            $(this).find('input, .input-group-prepend, .custom-select').prop('disabled', true);
+            modal.find('input, .custom-select').prop('disabled', true);
             modalFooter.find('#edit-user').text('Delete').addClass('btn-danger').removeClass('btn-info');
+            modalFooter.find('#edit-user').off('click').on('click', function() {
+                $.ajax({
+                    url: '/admin/delete',
+                    method: 'POST',
+                    data: { id: modal.find('#user-id').val() },
+                    success: function () {
+                        location.reload();
+                    },
+                    error: function (err) {
+                        alert(err.responseText);
+                    }
+                });
+                modal.modal('hide');
+            });
         } else {
             $(this).find('input, .input-group-prepend, .custom-select').prop('disabled', false);
             modalFooter.find('#edit-user').text('Edit').addClass('btn-info').removeClass('btn-danger');
