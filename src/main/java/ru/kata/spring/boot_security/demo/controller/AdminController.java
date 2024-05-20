@@ -42,14 +42,12 @@ public class AdminController {
 
     @PostMapping("")
     public String save(@ModelAttribute("user") User user, @RequestParam String roleName) {
-        Role role = roleRepository.findByName(roleName);
-        Role userRole = roleRepository.findByName("ROLE_USER");
-
         Set<Role> roles = new HashSet<>();
-        roles.add(role);
-        if(roleName.equals("ROLE_ADMIN")) {
-            roles.add(userRole);
-        }
+            String[] rolesNameAll = roleName.split(",");
+                for (int i = 0; i < rolesNameAll.length; i++) {
+                    Role role = roleRepository.findByName(rolesNameAll[i]);
+                    roles.add(role);
+                }
         user.setRoles(roles);
         userService.save(user);
         return "redirect:/admin#pills-admin";
